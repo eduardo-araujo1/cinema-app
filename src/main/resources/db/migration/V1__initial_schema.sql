@@ -1,0 +1,47 @@
+CREATE TABLE customers (
+    id BIGSERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL CHECK (role IN ('ROLE_USER', 'ROLE_ADMIN')),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE movies (
+    id BIGSERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    genre VARCHAR(50) NOT NULL CHECK (genre IN ('ACAO', 'COMEDIA', 'DRAMA', 'TERROR', 'SCI_FI', 'DOCUMENTARIO')),
+    poster_url TEXT NOT NULL
+);
+
+CREATE TABLE rooms (
+    id BIGSERIAL PRIMARY KEY,
+    room_number INTEGER NOT NULL,
+    total_seats INTEGER NOT NULL
+);
+
+CREATE TABLE seats (
+    id BIGSERIAL PRIMARY KEY,
+    room_id BIGINT NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+    seat_number VARCHAR(10) NOT NULL,
+    UNIQUE (room_id, seat_number)
+);
+
+CREATE TABLE sessions (
+    id BIGSERIAL PRIMARY KEY,
+    movie_id BIGINT NOT NULL REFERENCES movies(id) ON DELETE CASCADE,
+    room_id BIGINT NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL
+);
+
+CREATE TABLE tickets (
+    id VARCHAR(36) PRIMARY KEY,
+    customer_id BIGINT NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+    session_id BIGINT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+    seat_id BIGINT NOT NULL REFERENCES seats(id) ON DELETE CASCADE,
+    status VARCHAR(20) NOT NULL CHECK (status IN ('AGUARDANDO_PAGAMENTO', 'RESERVADO', 'EXPIRADO')),
+    price DECIMAL(10,2) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (session_id, seat_id)
+);
