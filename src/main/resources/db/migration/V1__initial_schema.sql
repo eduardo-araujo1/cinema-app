@@ -23,8 +23,7 @@ CREATE TABLE rooms (
 CREATE TABLE seats (
     id BIGSERIAL PRIMARY KEY,
     room_id BIGINT NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
-    seat_number VARCHAR(10) NOT NULL,
-    UNIQUE (room_id, seat_number)
+    seat_number VARCHAR(10) NOT NULL
 );
 
 CREATE TABLE sessions (
