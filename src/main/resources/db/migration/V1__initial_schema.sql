@@ -9,7 +9,7 @@ CREATE TABLE customers (
 CREATE TABLE movies (
     id BIGSERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    description TEXT,
+    description VARCHAR(255),
     genre VARCHAR(50) NOT NULL CHECK (genre IN ('ACAO', 'COMEDIA', 'DRAMA', 'TERROR', 'SCI_FI', 'DOCUMENTARIO')),
     poster_url TEXT NOT NULL
 );
