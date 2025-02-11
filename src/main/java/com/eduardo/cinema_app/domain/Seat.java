@@ -24,4 +24,7 @@ public class Seat {
 
     @Column(name = "seat_number", nullable = false)
     private String seatNumber;
+
+    @Column(name = "available", nullable = false)
+    private Boolean available = true;
 }
