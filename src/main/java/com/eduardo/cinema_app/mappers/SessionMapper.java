@@ -25,16 +25,18 @@ public class SessionMapper {
         session.setRoom(room);
         session.setStartTime(dto.startTime());
         session.setEndTime(dto.endTime());
+        session.setPricePerSeat(dto.pricePerSeat());
         return session;
     }
 
-    public SessionResponseDTO toDto (Session session) {
+    public SessionResponseDTO toDto(Session session) {
         return new SessionResponseDTO(
                 session.getId(),
                 movieMapper.toDto(session.getMovie()),
                 roomMapper.toDto(session.getRoom()),
                 session.getStartTime(),
-                session.getEndTime()
+                session.getEndTime(),
+                session.getPricePerSeat()
         );
     }
 
