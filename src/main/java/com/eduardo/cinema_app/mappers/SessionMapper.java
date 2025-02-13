@@ -4,6 +4,7 @@ import com.eduardo.cinema_app.domain.Movie;
 import com.eduardo.cinema_app.domain.Room;
 import com.eduardo.cinema_app.domain.Session;
 import com.eduardo.cinema_app.dtos.request.SessionRequestDTO;
+import com.eduardo.cinema_app.dtos.response.MovieSessionDTO;
 import com.eduardo.cinema_app.dtos.response.SessionResponseDTO;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +33,14 @@ public class SessionMapper {
                 session.getId(),
                 movieMapper.toDto(session.getMovie()),
                 roomMapper.toDto(session.getRoom()),
+                session.getStartTime(),
+                session.getEndTime()
+        );
+    }
+
+    public MovieSessionDTO toMovieSessionDTO(Session session) {
+        return new MovieSessionDTO(
+                session.getId(),
                 session.getStartTime(),
                 session.getEndTime()
         );

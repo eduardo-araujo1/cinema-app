@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface SessionRepository extends JpaRepository<Session, Long> {
 
@@ -18,4 +19,12 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
             @Param("roomId") Long roomId
             );
 
+    @Query("SELECT s FROM Session s " +
+            "WHERE s.movie.id = :movieId " +
+            "AND s.startTime >= :now " +
+            "ORDER BY s.startTime")
+    List<Session> findUpcomingSessionsByMovieId(
+            @Param("movieId") Long movieId,
+            @Param("now") LocalDateTime now
+    );
 }

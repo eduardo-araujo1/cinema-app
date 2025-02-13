@@ -2,6 +2,7 @@ package com.eduardo.cinema_app.controllers;
 
 import com.eduardo.cinema_app.dtos.request.MovieRequestDTO;
 import com.eduardo.cinema_app.dtos.response.MovieResponseDTO;
+import com.eduardo.cinema_app.dtos.response.MovieWithSessionsDTO;
 import com.eduardo.cinema_app.enums.Genre;
 import com.eduardo.cinema_app.services.MovieService;
 import jakarta.validation.Valid;
@@ -38,10 +39,11 @@ public class MovieController {
         return ResponseEntity.ok(movies);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<MovieResponseDTO> findMovieById(@PathVariable Long id) {
-        MovieResponseDTO findMovie = service.findById(id);
-        return ResponseEntity.ok(findMovie);
+
+    @GetMapping("/{id}/sessions")
+    public ResponseEntity<MovieWithSessionsDTO> getMovieWithSessions(@PathVariable Long id) {
+        var moviesWithSessions = service.findMovieWithSessions(id);
+        return ResponseEntity.ok(moviesWithSessions);
     }
 
     @PutMapping("/{id}")
