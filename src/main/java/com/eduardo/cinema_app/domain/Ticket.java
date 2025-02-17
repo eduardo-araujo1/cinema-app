@@ -11,10 +11,10 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Table(name = "tickets",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"sessiond_id", "seat_id"}))
+@Table(name = "tickets")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -33,9 +33,8 @@ public class Ticket {
     @JoinColumn(name = "session_id", nullable = false)
     private Session session;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_id", nullable = false)
-    private Seat seat;
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TicketSeat> ticketSeats;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

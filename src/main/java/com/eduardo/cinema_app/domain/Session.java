@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "sessions")
@@ -37,4 +38,8 @@ public class Session {
 
     @Column(name = "price_per_seat", nullable = false)
     private BigDecimal pricePerSeat;
+
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TicketSeat> ticketSeats;
+
 }
