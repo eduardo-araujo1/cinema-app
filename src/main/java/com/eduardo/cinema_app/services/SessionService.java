@@ -4,6 +4,10 @@ import com.eduardo.cinema_app.domain.Seat;
 import com.eduardo.cinema_app.dtos.request.SessionRequestDTO;
 import com.eduardo.cinema_app.dtos.response.SeatResponseDTO;
 import com.eduardo.cinema_app.dtos.response.SessionResponseDTO;
+import com.eduardo.cinema_app.exceptions.MovieNotFoundException;
+import com.eduardo.cinema_app.exceptions.RoomNotFoundException;
+import com.eduardo.cinema_app.exceptions.SessionAlreadyExistsException;
+import com.eduardo.cinema_app.exceptions.SessionNotFoundException;
 import com.eduardo.cinema_app.mappers.SessionMapper;
 import com.eduardo.cinema_app.repositories.MovieRepository;
 import com.eduardo.cinema_app.repositories.RoomRepository;
@@ -34,12 +38,12 @@ public class SessionService {
     }
 
     @Transactional
-    public SessionResponseDTO createSession (SessionRequestDTO dto) {
+    public SessionResponseDTO createSession(SessionRequestDTO dto) {
         var movie = movieRepository.findByTitleIgnoreCase(dto.movieTitle())
-                .orElseThrow(() -> new RuntimeException("Filme com o nome " + dto.movieTitle() + "não encontrado."));
+                .orElseThrow(() -> new MovieNotFoundException("Filme com o nome " + dto.movieTitle() + " não encontrado."));
 
         var room = roomRepository.findByRoomNumber(dto.roomNumber())
-                .orElseThrow(() -> new RuntimeException("Sala com o número " + dto.roomNumber() + "não encontrada." ));
+                .orElseThrow(() -> new RoomNotFoundException("Sala com o número " + dto.roomNumber() + " não encontrada."));
 
         checkForOverlappingSessions(dto.startTime(), dto.endTime(), room.getId());
 
@@ -53,13 +57,13 @@ public class SessionService {
         boolean existsOverlappingSession = sessionRepository.existsOverlappingSession(startTime, endTime, roomId);
 
         if (existsOverlappingSession) {
-            throw new RuntimeException("Já existe uma sessão para este horário na sala com ID " + roomId);
+            throw new SessionAlreadyExistsException("Já existe uma sessão para este horário na sala com ID " + roomId);
         }
     }
 
     public List<SeatResponseDTO> getAvailableSeats(Long sessionId) {
         var session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RuntimeException("Sessão com ID " + sessionId + " não encontrada."));
+                .orElseThrow(() -> new SessionNotFoundException("Sessão com ID " + sessionId + " não encontrada."));
 
         List<Seat> seats = seatRepository.findByRoomId(session.getRoom().getId());
 

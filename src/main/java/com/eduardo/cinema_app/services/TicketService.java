@@ -3,6 +3,10 @@ package com.eduardo.cinema_app.services;
 import com.eduardo.cinema_app.domain.*;
 import com.eduardo.cinema_app.dtos.request.TicketRequestDTO;
 import com.eduardo.cinema_app.dtos.response.TicketResponseDTO;
+import com.eduardo.cinema_app.exceptions.CustomerNotFoundException;
+import com.eduardo.cinema_app.exceptions.SeatOccupiedException;
+import com.eduardo.cinema_app.exceptions.SessionNotFoundException;
+import com.eduardo.cinema_app.exceptions.UnableToLockSeatsException;
 import com.eduardo.cinema_app.mappers.TicketMapper;
 import com.eduardo.cinema_app.repositories.*;
 import org.springframework.dao.PessimisticLockingFailureException;
@@ -51,27 +55,25 @@ public class TicketService {
             return ticketMapper.toDTO(ticket, seatNumbers);
 
         } catch (PessimisticLockingFailureException e) {
-            throw new RuntimeException("Unable to lock seats. Please try again.", e);
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Error creating ticket: " + e.getMessage(), e);
+            throw new UnableToLockSeatsException("Não é possível bloquear os assentos. Tente novamente.", e);
         }
     }
 
     private Customer findCustomerById(Long customerId) {
         return customerRepository.findById(customerId)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new CustomerNotFoundException("Usuário não encontrado."));
     }
 
     private Session findSessionById(Long sessionId) {
         return sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RuntimeException("Session not found"));
+                .orElseThrow(() -> new SessionNotFoundException("Sessão não encontrada."));
     }
 
     private List<Seat> fetchAndValidateSeats(List<Long> seatIds, Session session) {
         List<Seat> availableSeats = seatRepository.findAvailableSeatsWithLock(seatIds, session.getId());
 
         if (availableSeats.size() != seatIds.size()) {
-            throw new RuntimeException("One or more seats are already taken or not found");
+            throw new SeatOccupiedException("Um ou mais assentos já estão ocupados.");
         }
         return availableSeats;
     }

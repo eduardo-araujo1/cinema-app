@@ -6,6 +6,7 @@ import com.eduardo.cinema_app.dtos.request.MovieRequestDTO;
 import com.eduardo.cinema_app.dtos.response.MovieResponseDTO;
 import com.eduardo.cinema_app.dtos.response.MovieWithSessionsDTO;
 import com.eduardo.cinema_app.enums.Genre;
+import com.eduardo.cinema_app.exceptions.MovieNotFoundException;
 import com.eduardo.cinema_app.mappers.MovieMapper;
 import com.eduardo.cinema_app.mappers.SessionMapper;
 import com.eduardo.cinema_app.repositories.MovieRepository;
@@ -58,7 +59,7 @@ public class MovieService {
 
     public MovieWithSessionsDTO findMovieWithSessions(Long movieId) {
         var movie = movieRepository.findById(movieId).orElseThrow(() ->
-                new RuntimeException("Filme com o id" + movieId + "não encontrado."));
+                new MovieNotFoundException("Filme com o id" + movieId + " não encontrado."));
 
         List<Session> sessions = sessionRepository.findUpcomingSessionsByMovieId(movieId, LocalDateTime.now());
 
@@ -76,7 +77,7 @@ public class MovieService {
 
     public MovieResponseDTO updateMovie(Long id, MovieRequestDTO requestDTO, MultipartFile image) {
         Movie movie = movieRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Filme não encontrado com o ID: " + id));
+                .orElseThrow(() -> new MovieNotFoundException("Filme com o id" + id + " não encontrado."));
 
         movie.setTitle(requestDTO.title());
         movie.setDescription(requestDTO.description());
@@ -91,7 +92,7 @@ public class MovieService {
 
     public void deleteMovie(Long id) {
         Movie movie = movieRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Filme não encontrado com o ID: " + id));
+                orElseThrow(() -> new MovieNotFoundException("Filme com o id" + id + " não encontrado."));
 
         String filename = movie.getPosterUrl().substring(movie.getPosterUrl().lastIndexOf("/") + 1);
         s3StorageService.deleteFile(filename);

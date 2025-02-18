@@ -4,6 +4,7 @@ import com.eduardo.cinema_app.domain.Room;
 import com.eduardo.cinema_app.dtos.request.RoomRequestDTO;
 import com.eduardo.cinema_app.dtos.response.RoomResponseDTO;
 import com.eduardo.cinema_app.services.RoomService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +23,7 @@ public class RoomController {
     }
 
     @PostMapping
-    public ResponseEntity<RoomResponseDTO> createRoom (@RequestBody RoomRequestDTO dto) {
+    public ResponseEntity<RoomResponseDTO> createRoom (@Valid @RequestBody RoomRequestDTO dto) {
         var savedRoom = service.createRoom(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedRoom);
     }
