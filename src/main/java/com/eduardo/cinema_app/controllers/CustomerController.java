@@ -4,6 +4,7 @@ import com.eduardo.cinema_app.dtos.request.AuthenticationDTO;
 import com.eduardo.cinema_app.dtos.request.RegisterDTO;
 import com.eduardo.cinema_app.dtos.response.LoginResponseDTO;
 import com.eduardo.cinema_app.services.AuthenticationService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,13 +23,13 @@ public class CustomerController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login (@RequestBody AuthenticationDTO authenticationDTO) {
+    public ResponseEntity<LoginResponseDTO> login (@Valid @RequestBody AuthenticationDTO authenticationDTO) {
         String token = service.login(authenticationDTO);
         return ResponseEntity.ok().body(new LoginResponseDTO(token));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody RegisterDTO dto) {
+    public ResponseEntity<Void> register(@Valid @RequestBody RegisterDTO dto) {
         service.register(dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

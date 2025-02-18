@@ -7,7 +7,6 @@ import com.eduardo.cinema_app.dtos.request.RegisterDTO;
 import com.eduardo.cinema_app.exceptions.AuthenticationFailureException;
 import com.eduardo.cinema_app.exceptions.UserAlreadyExistsException;
 import com.eduardo.cinema_app.repositories.CustomerRepository;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,7 +43,7 @@ public class AuthenticationService implements UserDetailsService {
     public void register(RegisterDTO registerDTO) {
         String email = registerDTO.email();
         if (customerRepository.findByEmail(email) != null) {
-            throw new UserAlreadyExistsException("O usuário com o e-mail" + registerDTO.email() + "já existe.");
+            throw new UserAlreadyExistsException("O usuário com o e-mail" + registerDTO.email() + " já existe.");
         }
         String encryptedPassword = passwordEncoder.encode(registerDTO.password());
         var newUser = new Customer(registerDTO.name(), email, encryptedPassword);
