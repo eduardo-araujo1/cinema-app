@@ -3,6 +3,7 @@ package com.eduardo.cinema_app.services;
 import com.eduardo.cinema_app.domain.*;
 import com.eduardo.cinema_app.dtos.request.TicketRequestDTO;
 import com.eduardo.cinema_app.dtos.response.TicketResponseDTO;
+import com.eduardo.cinema_app.enums.Status;
 import com.eduardo.cinema_app.exceptions.CustomerNotFoundException;
 import com.eduardo.cinema_app.exceptions.SeatOccupiedException;
 import com.eduardo.cinema_app.exceptions.SessionNotFoundException;
@@ -105,5 +106,13 @@ public class TicketService {
 
     private BigDecimal calculateTicketPrice(Session session, int numberOfSeats) {
         return session.getPricePerSeat().multiply(BigDecimal.valueOf(numberOfSeats));
+    }
+
+    @Transactional
+    public void updateTicketStatus(String ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket não encontrado"));
+        ticket.setStatus(Status.RESERVADO);
+        ticketRepository.save(ticket);
     }
 }
