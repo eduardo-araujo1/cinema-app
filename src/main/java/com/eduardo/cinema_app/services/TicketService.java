@@ -26,18 +26,20 @@ public class TicketService {
     private final CustomerRepository customerRepository;
     private final TicketMapper ticketMapper;
     private final TicketSeatRepository ticketSeatRepository;
+    private final EmailService emailService;
 
     public TicketService(TicketRepository ticketRepository,
                          SessionRepository sessionRepository,
                          SeatRepository seatRepository,
                          CustomerRepository customerRepository,
-                         TicketMapper ticketMapper, TicketSeatRepository ticketSeatRepository) {
+                         TicketMapper ticketMapper, TicketSeatRepository ticketSeatRepository, EmailService emailService) {
         this.ticketRepository = ticketRepository;
         this.sessionRepository = sessionRepository;
         this.seatRepository = seatRepository;
         this.customerRepository = customerRepository;
         this.ticketMapper = ticketMapper;
         this.ticketSeatRepository = ticketSeatRepository;
+        this.emailService = emailService;
     }
 
 
@@ -110,9 +112,11 @@ public class TicketService {
 
     @Transactional
     public void updateTicketStatus(String ticketId) {
-        Ticket ticket = ticketRepository.findById(ticketId)
+        Ticket ticket = ticketRepository.findByIdWithDetails(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket não encontrado"));
         ticket.setStatus(Status.RESERVADO);
         ticketRepository.save(ticket);
+
+        emailService.sendPaymentConfirmationEmail(ticket);
     }
 }
