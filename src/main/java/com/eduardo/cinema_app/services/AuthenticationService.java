@@ -4,6 +4,7 @@ import com.eduardo.cinema_app.config.TokenService;
 import com.eduardo.cinema_app.domain.Customer;
 import com.eduardo.cinema_app.dtos.request.AuthenticationDTO;
 import com.eduardo.cinema_app.dtos.request.RegisterDTO;
+import com.eduardo.cinema_app.dtos.response.LoginResponseDTO;
 import com.eduardo.cinema_app.exceptions.AuthenticationFailureException;
 import com.eduardo.cinema_app.exceptions.UserAlreadyExistsException;
 import com.eduardo.cinema_app.repositories.CustomerRepository;
@@ -31,13 +32,15 @@ public class AuthenticationService implements UserDetailsService {
         return customerRepository.findByEmail(email);
     }
 
-    public String login(AuthenticationDTO authenticationDTO) {
+    public LoginResponseDTO login(AuthenticationDTO authenticationDTO) {
         var customer = loadUserByUsername(authenticationDTO.email());
 
         if (customer == null || !passwordEncoder.matches(authenticationDTO.password(), customer.getPassword())) {
             throw new AuthenticationFailureException("Email ou senha inválidos.");
         }
-        return tokenService.generateToken(customer);
+
+        String token = tokenService.generateToken(customer);
+        return new LoginResponseDTO(customer, token);
     }
 
     public void register(RegisterDTO registerDTO) {

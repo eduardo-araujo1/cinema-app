@@ -4,6 +4,7 @@ import com.eduardo.cinema_app.config.TokenService;
 import com.eduardo.cinema_app.domain.Customer;
 import com.eduardo.cinema_app.dtos.request.AuthenticationDTO;
 import com.eduardo.cinema_app.dtos.request.RegisterDTO;
+import com.eduardo.cinema_app.dtos.response.LoginResponseDTO;
 import com.eduardo.cinema_app.enums.Role;
 import com.eduardo.cinema_app.exceptions.AuthenticationFailureException;
 import com.eduardo.cinema_app.exceptions.UserAlreadyExistsException;
@@ -52,9 +53,13 @@ public class AuthenticationServiceTest {
         when(passwordEncoder.matches(password, customer.getPassword())).thenReturn(true);
         when(tokenService.generateToken(any(Customer.class))).thenReturn("generatedToken");
 
-        String token = authenticationService.login(new AuthenticationDTO(email, password));
+        LoginResponseDTO response = authenticationService.login(new AuthenticationDTO(email, password));
 
-        assertNotNull(token);
+        assertNotNull(response);
+        assertNotNull(response.token());
+        assertEquals(1L, response.id());
+        assertEquals(name, response.name());
+        assertEquals(email, response.email());
         verify(tokenService).generateToken(customer);
     }
 
