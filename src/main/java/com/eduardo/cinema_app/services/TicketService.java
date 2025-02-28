@@ -4,10 +4,7 @@ import com.eduardo.cinema_app.domain.*;
 import com.eduardo.cinema_app.dtos.request.TicketRequestDTO;
 import com.eduardo.cinema_app.dtos.response.TicketResponseDTO;
 import com.eduardo.cinema_app.enums.Status;
-import com.eduardo.cinema_app.exceptions.CustomerNotFoundException;
-import com.eduardo.cinema_app.exceptions.SeatOccupiedException;
-import com.eduardo.cinema_app.exceptions.SessionNotFoundException;
-import com.eduardo.cinema_app.exceptions.UnableToLockSeatsException;
+import com.eduardo.cinema_app.exceptions.*;
 import com.eduardo.cinema_app.mappers.TicketMapper;
 import com.eduardo.cinema_app.repositories.*;
 import org.springframework.dao.PessimisticLockingFailureException;
@@ -113,7 +110,7 @@ public class TicketService {
     @Transactional
     public void updateTicketStatus(String ticketId) {
         Ticket ticket = ticketRepository.findByIdWithDetails(ticketId)
-                .orElseThrow(() -> new RuntimeException("Ticket não encontrado"));
+                .orElseThrow(() -> new TicketNotFoundException("Ticket não encontrado"));
         ticket.setStatus(Status.RESERVADO);
         ticketRepository.save(ticket);
 

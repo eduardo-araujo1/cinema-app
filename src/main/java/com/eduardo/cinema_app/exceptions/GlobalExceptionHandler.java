@@ -84,5 +84,10 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(TicketNotFoundException.class)
+    public ResponseEntity<Map<String, String>> ticketNotFoundException(TicketNotFoundException ex) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
 
 }
