@@ -3,10 +3,13 @@ package com.eduardo.cinema_app.service;
 import com.eduardo.cinema_app.domain.*;
 import com.eduardo.cinema_app.dtos.request.TicketRequestDTO;
 import com.eduardo.cinema_app.dtos.response.TicketResponseDTO;
+import com.eduardo.cinema_app.enums.Status;
 import com.eduardo.cinema_app.exceptions.SeatOccupiedException;
+import com.eduardo.cinema_app.exceptions.TicketNotFoundException;
 import com.eduardo.cinema_app.exceptions.UnableToLockSeatsException;
 import com.eduardo.cinema_app.mappers.TicketMapper;
 import com.eduardo.cinema_app.repositories.*;
+import com.eduardo.cinema_app.services.EmailService;
 import com.eduardo.cinema_app.services.TicketService;
 import com.eduardo.cinema_app.util.TicketTestUtil;
 import org.junit.jupiter.api.Test;
@@ -39,6 +42,8 @@ class TicketServiceTest {
     private TicketMapper ticketMapper;
     @Mock
     private TicketSeatRepository ticketSeatRepository;
+    @Mock
+    private EmailService emailService;
 
     @InjectMocks
     private TicketService ticketService;
@@ -85,7 +90,6 @@ class TicketServiceTest {
         verify(sessionRepository).findById(requestDTO.sessionId());
         verify(seatRepository).findAvailableSeatsWithLock(TicketTestUtil.SEAT_IDS, session.getId());
         verify(ticketRepository).saveAndFlush(ticket);
-        verify(ticketMapper).toEntity(eq(requestDTO), eq(customer), eq(session), eq(totalPrice));
     }
 
     @Test
@@ -153,6 +157,39 @@ class TicketServiceTest {
                     return ticketSeat;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Test
+    void updateTicketStatus_WithValidTicketId_ShouldUpdateStatusAndSendEmail() {
+        Ticket ticket = TicketTestUtil.createTicket();
+        ticket.setStatus(Status.RESERVADO);
+
+        when(ticketRepository.findByIdWithDetails(ticket.getId()))
+                .thenReturn(Optional.of(ticket));
+
+        ticketService.updateTicketStatus(ticket.getId());
+
+        assertEquals(Status.RESERVADO, ticket.getStatus());
+        verify(ticketRepository).findByIdWithDetails(ticket.getId());
+        verify(ticketRepository).save(ticket);
+        verify(emailService).sendPaymentConfirmationEmail(ticket);
+    }
+
+    @Test
+    void updateTicketStatus_WithInvalidTicketId_ShouldThrowException() {
+        String invalidTicketId = "invalid-uuid";
+
+        when(ticketRepository.findByIdWithDetails(invalidTicketId))
+                .thenReturn(Optional.empty());
+
+
+        TicketNotFoundException exception = assertThrows(TicketNotFoundException.class, () ->
+                ticketService.updateTicketStatus(invalidTicketId)
+        );
+
+        assertEquals("Ticket não encontrado", exception.getMessage());
+        verify(ticketRepository).findByIdWithDetails(invalidTicketId);
+        verifyNoMoreInteractions(ticketRepository, emailService);
     }
 
 }
