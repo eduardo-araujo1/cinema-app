@@ -41,6 +41,7 @@ public class SecurityConfigurations {
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html"
                         ).permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
