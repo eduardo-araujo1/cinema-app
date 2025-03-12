@@ -13,7 +13,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=cinema-db
     networks:
-      - postgres-network
+      - cinema-app-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d cinema-db"]
       interval: 10s
@@ -35,13 +35,25 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:
-      - postgres-network
+      - cinema-app-network
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - cinema-app-network
+    ports:
+      - 9090:9090
 
 volumes:
   pgdata:
   pgadmin_data:
+  prometheus_data:
 
 networks:
-  postgres-network:
+  cinema-app-network:
     driver: bridge
 
