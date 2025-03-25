@@ -43,7 +43,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t cinema-app:${{ github.sha | slice(0, 7) }} .
+          docker build -t cinema-app:${{ github.sha }} .
 
       - name: Trivy Scan
-        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image cinema-app:${{ github.sha | slice(0, 7) }}
+        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image cinema-app:${{ github.sha }}
