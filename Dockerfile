@@ -5,6 +5,6 @@ RUN mvn clean package
 
 FROM amazoncorretto:21-alpine
 WORKDIR /app
-COPY --from=build /app/target/*.jar discapp.jar
+COPY --from=build /app/target/*.jar cinema-app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "discapp.jar"]
+ENTRYPOINT ["java", "-jar", "cinema-app.jar"]
