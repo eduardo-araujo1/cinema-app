@@ -59,7 +59,7 @@ public class TicketController {
             @ApiResponse(responseCode = "200", description = "Falha no pagamento.")
     })
 
-    @GetMapping("/fail")
+    @GetMapping("/fail/{ticketId}")
     public ResponseEntity<String> handlePaymentFailure(@PathVariable String ticketId) {
         return ResponseEntity.ok("Falha no pagamento.");
     }
