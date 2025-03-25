@@ -41,9 +41,16 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=eduardo-araujo1_cinema-app
 
+      - name: Login to Docker Hub
+        run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
+
       - name: Build Docker Image
         run: |
-          docker build -t cinema-app:${{ github.sha }} .
+          docker build -t edusoares/cinema-app:${{ github.sha }} .
 
       - name: Trivy Scan
-        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image cinema-app:${{ github.sha }}
+        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image edusoares/cinema-app:${{ github.sha }}
+
+      - name: Publish image to Docker Hub
+        run: docker push edusoares/cinema-app:${{ github.sha }}
+
