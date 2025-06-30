@@ -21,7 +21,7 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
-    @Async
+    @Async("virtualThreadExecutor")
     public void sendPaymentConfirmationEmail(Ticket ticket) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
